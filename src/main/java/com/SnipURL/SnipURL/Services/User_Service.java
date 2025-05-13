@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Random;
 
 @Service
 public class User_Service  {
@@ -38,28 +39,23 @@ public class User_Service  {
             User user = redisService.get(username,User.class);
             if (user==null){
                 User user1 = user_repository.findByusername(username);
-                SecureRandom random = new SecureRandom();
-                StringBuilder otp = new StringBuilder();
 
-                for (int i = 0; i < 6; i++) {
-                    int digit = random.nextInt(10);  // generates a digit from 0 to 9
-                    otp.append(digit);
-                }
-                emailServices.messages(user1.getEmail(),"Forgot Password",otp.toString());
+                Random random = new Random();
+                int number = 100000 + random.nextInt(900000); // ensures it's 6 digits
+                String otp = String.valueOf(number);
+                emailServices.messages(user1.getEmail(),"Forgot Password",otp);
                 redisService.setLog("OTP_" + username, otp,300L);
+                String oo= redisService.get("OTP_" + username,String.class);
+                System.out.println(oo);
                 return true;
             }
             else {
 
-                SecureRandom random = new SecureRandom();
-                StringBuilder otp = new StringBuilder();
-
-                for (int i = 0; i < 9; i++) {
-                    int digit = random.nextInt(10);  // generates a digit from 0 to 9
-                    otp.append(digit);
-                }
-                emailServices.messages(user.getEmail(),"Forgot Password",otp.toString());
-                redisService.setLog("OTP_" + username, otp.toString(),300L);
+                Random random = new Random();
+                int number = 100000 + random.nextInt(900000); // ensures it's 6 digits
+                String otp = String.valueOf(number);
+                emailServices.messages(user.getEmail(),"Forgot Password",otp);
+                redisService.setLog("OTP_" + username, otp,300L);
                 String oo= redisService.get("OTP_" + username,String.class);
                 System.out.println(oo);
                 return true;
@@ -71,8 +67,10 @@ public class User_Service  {
     }
     public boolean enterotp(String username,String otp){
         try {
+
             String storedotp = redisService.get("OTP_" + username , String.class);
-            if (otp == storedotp){
+            if(otp.trim().replaceAll("\\p{C}", "").equals(storedotp.trim().replaceAll("\\p{C}", ""))){
+
 
                 return true;
             }
@@ -87,5 +85,14 @@ public class User_Service  {
         User user = user_repository.findByusername(username);
         user.setPassword(passwordEncoder.encode(password));
         user_repository.save(user);
+    }
+
+    public void update(String username,User user) {
+        User user1 = user_repository.findByusername(username);
+        user1.setPassword(passwordEncoder.encode(user.getPassword()));
+        user1.setUsername(user.getUsername());
+        user1.setEmail(user.getEmail());
+        user1.setName(user.getName());
+        user_repository.save(user1);
     }
 }

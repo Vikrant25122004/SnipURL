@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface URL_Repository extends MongoRepository<URL, ObjectId> {
+    URL findByoriginal(String original);
 }

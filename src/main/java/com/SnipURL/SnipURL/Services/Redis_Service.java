@@ -17,6 +17,9 @@ public class Redis_Service {
     public <T> T get(String key, Class<T> entityclass) throws JsonProcessingException {
         try {
             Object o = redisTemplate.opsForValue().get(key);
+            if(entityclass==String.class){
+                return entityclass.cast(o);
+            }
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(o.toString(),entityclass);
         }

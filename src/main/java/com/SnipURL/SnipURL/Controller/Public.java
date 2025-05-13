@@ -62,7 +62,7 @@ public class Public {
     public ResponseEntity enterotp(@PathVariable String username, @RequestParam String otp, @RequestParam String password){
         try {
             if (
-            userService.enterotp(username,otp)==true){
+             userService.enterotp(username,otp)==true){
                 userService.updatepassword(username, password);
                 return new ResponseEntity<>(HttpStatus.OK);
             }

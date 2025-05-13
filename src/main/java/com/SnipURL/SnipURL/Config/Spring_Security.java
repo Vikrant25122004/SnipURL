@@ -26,6 +26,7 @@ public class Spring_Security {
         return  http.csrf(AbstractHttpConfigurer::disable) // Disable CSRF as we're using JWT
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/User/**").authenticated()
+                        .requestMatchers("/URL/**").authenticated()
                         .anyRequest().permitAll()) // Permit other requests
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)// Add JWT filter before UsernamePasswordAuthenticationFilter// Add vendor authentication provider
                 .build();
