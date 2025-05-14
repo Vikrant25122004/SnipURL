@@ -1,5 +1,6 @@
 package com.SnipURL.SnipURL.Controller;
 
+import com.SnipURL.SnipURL.Entity.URL;
 import com.SnipURL.SnipURL.Entity.User;
 import com.SnipURL.SnipURL.Services.URL_Service;
 import com.SnipURL.SnipURL.Services.User_Service;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/User")
@@ -30,7 +33,7 @@ public class User_Controller {
         }
     }
     @PostMapping("/create")
-    private ResponseEntity<?> createURL(@RequestParam  String url){
+    private ResponseEntity<?> createURL(@RequestBody  String url){
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
@@ -41,5 +44,27 @@ public class User_Controller {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+    }
+    @DeleteMapping("/delete")
+    private ResponseEntity<?> delete(@RequestBody String url){
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            urlService.deleteurl(url,username);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+   @GetMapping
+    public URL getallurl(@RequestParam String url){
+        URL urls = urlService.getall(url);
+        return urls;
+    }
+    @GetMapping("/profile")
+    public User getuser(@RequestParam String username){
+        User user = userService.Getuser(username);
+        return user;
     }
 }

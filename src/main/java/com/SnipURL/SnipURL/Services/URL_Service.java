@@ -78,4 +78,18 @@ public class URL_Service {
         }
     }
 
+    public void deleteurl(String url, String username) {
+        User user = user_repository.findByusername(username);
+        URL url1 = urlRepository.findByoriginal(url);
+        ArrayList<URL> urls = user.getUrls();
+        urls.remove(url1);
+        urlRepository.delete(url1);
+        user.setUrls(urls);
+        user_repository.save(user);
+    }
+
+    public URL getall(String url) {
+        URL url1 = urlRepository.findByoriginal(url);
+        return url1;
+    }
 }
