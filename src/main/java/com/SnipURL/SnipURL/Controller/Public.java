@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,8 @@ public class Public {
     private User_Service userService;
     @Autowired
     private User_Detail_Service userDetailService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Autowired
     private JWT_UTILS jwtUtils;
     @PostMapping("/signup")
@@ -35,6 +40,7 @@ public class Public {
     @PostMapping("/login")
     public ResponseEntity<?> Loginrep(@RequestBody  User user, HttpServletResponse response){
         try{
+            authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
             UserDetails userDetails = userDetailService.loadUserByUsername(user.getUsername());
             String jwt = jwtUtils.generateToken(userDetails.getUsername());
             Cookie cookie = new Cookie("jwt",jwt);

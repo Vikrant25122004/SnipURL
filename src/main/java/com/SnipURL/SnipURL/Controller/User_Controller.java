@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,9 +30,11 @@ public class User_Controller {
         }
     }
     @PostMapping("/create")
-    private ResponseEntity<?> createURL(String url){
+    private ResponseEntity<?> createURL(@RequestParam  String url){
         try{
-            String urll = urlService.generateurl(url);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            String urll = urlService.generateurl(url,username);
             return new ResponseEntity<>(urll,HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();

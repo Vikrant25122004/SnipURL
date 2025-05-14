@@ -28,7 +28,8 @@ public class Spring_Security {
                         .requestMatchers("/User/**").authenticated()
                         .requestMatchers("/URL/**").authenticated()
                         .anyRequest().permitAll()) // Permit other requests
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)// Add JWT filter before UsernamePasswordAuthenticationFilter// Add vendor authentication provider
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(DaoAuthenticationProvider())
                 .build();
 
 
@@ -44,7 +45,7 @@ public class Spring_Security {
 
     }
     @Bean
-    public DaoAuthenticationProvider SurveyorAuthenticationProvider(){
+    public DaoAuthenticationProvider DaoAuthenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailService);
         provider.setPasswordEncoder(passwordEncoder());

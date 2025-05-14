@@ -28,7 +28,6 @@ public class User {
     private String email;
     @NonNull
     private String password;
-    private int urlss= 3;
     @DBRef
     private ArrayList<URL> urls = new ArrayList<>();
 
