@@ -8,6 +8,9 @@ import com.SnipURL.SnipURL.Utils.Hmac_SHA256Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +26,8 @@ public class URL_Service {
     private URL_Repository urlRepository;
     @Autowired
     private Hmac_SHA256Utils hmacSha256Utils;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public  String secretkey = "yT1u+P9vhRr8nGzv4CxC97aFLkPQyX5CeHjVY+2sBlQ";
     public static String link = "http://localhost:8080/";
@@ -78,18 +83,37 @@ public class URL_Service {
         }
     }
 
-    public void deleteurl(String url, String username) {
+    public void deleteurl(String url,String ShortURL, String username) {
         User user = user_repository.findByusername(username);
-        URL url1 = urlRepository.findByoriginal(url);
-        ArrayList<URL> urls = user.getUrls();
-        urls.remove(url1);
-        urlRepository.delete(url1);
-        user.setUrls(urls);
+        Query query = new Query();
+        query.addCriteria(Criteria.where(
+                "shortURL").is(ShortURL));
+        URL urls = mongoTemplate.findOne(query,URL.class);
+        ArrayList<URL> urls1 = user.getUrls();
+        urls1.remove(urls);
+        user.setUrls(urls1);
         user_repository.save(user);
+        urlRepository.delete(urls);
+
+
+
+
+
+
     }
 
-    public URL getall(String url) {
-        URL url1 = urlRepository.findByoriginal(url);
-        return url1;
+    public String redirect(String shorturl) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("shortURL").is(shorturl));
+        URL url = mongoTemplate.findOne(query,URL.class);
+        if (url==null){
+            return null;
+        }
+        if (url.getExpire_By().isBefore(LocalDateTime.now())){
+            return null;
+        }
+        else {
+            return url.getOriginal();
+        }
     }
 }

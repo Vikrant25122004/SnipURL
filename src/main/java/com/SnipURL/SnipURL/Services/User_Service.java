@@ -95,17 +95,4 @@ public class User_Service  {
         user1.setName(user.getName());
         user_repository.save(user1);
     }
-    public User Getuser(String username){
-        System.out.println("Looking up user by username: " + username);
-        User user = user_repository.findByusername(username);
-        if (user== null){
-            System.out.println("User not found for username: " + username);
-
-            throw new RuntimeException("user not found with this username");
-        }
-        else {
-            return user;
-        }
-
-    }
 }

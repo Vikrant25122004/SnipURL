@@ -23,7 +23,7 @@ public class User_Controller {
     @Autowired
     private URL_Service urlService;
     @PutMapping("/update/{username}")
-    private ResponseEntity<?> update(@PathVariable String username, @RequestBody User user){
+    public ResponseEntity<?> update(@PathVariable String username, @RequestBody User user){
         try {
             userService.update(username,user);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -33,7 +33,7 @@ public class User_Controller {
         }
     }
     @PostMapping("/create")
-    private ResponseEntity<?> createURL(@RequestBody  String url){
+    public ResponseEntity<?> createURL(@RequestParam  String url){
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
@@ -46,25 +46,16 @@ public class User_Controller {
 
     }
     @DeleteMapping("/delete")
-    private ResponseEntity<?> delete(@RequestBody String url){
-        try{
+    public ResponseEntity<?> deleteurl(@RequestParam String original, @RequestParam String shortURL){
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
-            urlService.deleteurl(url,username);
+            urlService.deleteurl(original, shortURL,username);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-   @GetMapping
-    public URL getallurl(@RequestParam String url){
-        URL urls = urlService.getall(url);
-        return urls;
-    }
-    @GetMapping("/profile")
-    public User getuser(@RequestParam String username){
-        User user = userService.Getuser(username);
-        return user;
-    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.SnipURL.SnipURL.Controller;
 
 import com.SnipURL.SnipURL.Entity.User;
+import com.SnipURL.SnipURL.Services.URL_Service;
 import com.SnipURL.SnipURL.Services.User_Detail_Service;
 import com.SnipURL.SnipURL.Services.User_Service;
 import com.SnipURL.SnipURL.Utils.JWT_UTILS;
@@ -17,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 public class Public {
     @Autowired
@@ -25,6 +28,8 @@ public class Public {
     private User_Detail_Service userDetailService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private URL_Service urlService;
     @Autowired
     private JWT_UTILS jwtUtils;
     @PostMapping("/signup")
@@ -80,6 +85,20 @@ public class Public {
             throw new RuntimeException(e);
         }
     }
+    @GetMapping("/{shortcode}")
+    public ResponseEntity redirection(@PathVariable String shortcode){
+        String shorturl = "http://localhost:8080/" + shortcode;
+       String originalurl = urlService.redirect(shorturl);
+       if (originalurl==null){
+           return new ResponseEntity<>("URL not exist or expire",HttpStatus.NO_CONTENT);
+       }
+       else {
+           return ResponseEntity.status(HttpStatus.FOUND)
+                   .location(URI.create(originalurl))
+                   .build();
+       }
+    }
+
 
 
 }
